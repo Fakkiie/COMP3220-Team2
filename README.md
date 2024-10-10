@@ -31,5 +31,5 @@ Node.js (which includes npm)<br/>
 5. Running Python Scripts
   Ensure Python is installed and navigate to the python folder.<br/>
   To process the CSV or KML data, run:<br/>
-  python3 python/process_data.py to process ward boundary data.<br/>
-  python3 python/service_request.py to handle service requests.<br/>
+  python3 python/processData.py to process ward boundary data.<br/>
+  python3 python/serviceRequest.py to handle service requests.<br/>
