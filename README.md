@@ -6,27 +6,27 @@ Node.js (which includes npm)
 
 **Setup Instructions**
 
-1. Clone the Repository
-  First, clone the project to your local machine:
-  Run git clone https://github.com/Fakkiie/COMP3220-Team2.git
-  Navigate to the project directory by running cd COMP3220-Team2
+1. **Clone the Repository**
+  First, clone the project to your local machine: <br/>
+  Run git clone https://github.com/Fakkiie/COMP3220-Team2.git <br/>
+  Navigate to the project directory by running cd COMP3220-Team2 <br/>
 
-2. Setting Up the Python Environment
-  You'll need to install some Python libraries to run the Python scripts.
-  Ensure pip (Python's package manager) is installed on your system.
-  Install the required Python libraries:
-  Run pip install pandas geopandas
-  These are required for handling CSV and KML files.
+2.** Setting Up the Python Environment**
+  You'll need to install some Python libraries to run the Python scripts. <br/>
+  Ensure pip (Python's package manager) is installed on your system. <br/>
+  Install the required Python libraries: <br/>
+  Run pip install pandas geopandas <br/>
+  These are required for handling CSV and KML files. <br/>
 
-3. Setting Up the React Frontend
-  Navigate to the React app folder:
-  Run cd windsor-heatmap
-  Install the required Node.js packages:
-  Run npm install to install all dependencies.
+3. **Setting Up the React Frontend**
+  Navigate to the React app folder: <br/>
+  Run cd windsor-heatmap <br/>
+  Install the required Node.js packages: <br/>
+  Run npm install to install all dependencies. <br/>
 
-4. Running the React App
-  To start the React development server, run npm start in the windsor-heatmap directory.
-  The app will be accessible at http://localhost:3000.
+4. **Running the React App**
+  To start the React development server, run npm start in the windsor-heatmap directory.<br/>
+  The app will be accessible at http://localhost:3000. <br/>
 
 5. Running Python Scripts
   Ensure Python is installed and navigate to the python folder.
