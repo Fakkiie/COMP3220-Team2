@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaTimes, FaArrowRight } from 'react-icons/fa';
 
 const Filter = () => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const [filterType, setFilterType] = useState('service');
 
   const toggleFilters = () => {
@@ -137,7 +137,7 @@ const Filter = () => {
           </div>
         )}
 
-        {/* additional filter options if we need */}
+      
       </div>
     </div>
   );
