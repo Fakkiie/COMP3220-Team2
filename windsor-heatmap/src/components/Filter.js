@@ -2,56 +2,76 @@ import React, { useState } from 'react';
 import { FaTimes, FaArrowRight } from 'react-icons/fa';
 
 const Filter = () => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const [filterType, setFilterType] = useState('service');
 
   const toggleFilters = () => {
     setIsVisible(!isVisible);
   };
 
+  const handleFilterTypeChange = (e) => {
+    setFilterType(e.target.value);
+  };
+
   return (
     <div className="relative">
-      {/* Toggle Button */}
+      {/* toggle button */}
       {!isVisible && (
         <button
           onClick={toggleFilters}
-          className="fixed left-0 top-1/2 transform -translate-y-1/2 p-3 bg-blue-500 text-white rounded-r focus:outline-none z-10 flex items-center"
-          style={{ height: '70px' }}
+          className="fixed top-1/2 left-0 transform -translate-y-1/2 p-2 bg-blue-500 text-white rounded-r focus:outline-none z-10 flex items-center justify-center"
+          style={{ height: '50px', width: '50px' }}
         >
-          <FaArrowRight size={20} />
+          <FaArrowRight size={16} />
         </button>
       )}
 
-      {/* Filter Bar */}
+      {/* filter bar */}
       <div
-        className={`filter-bar fixed left-0 top-1/2 transform -translate-y-1/2 p-6 bg-gray-100 bg-opacity-75 shadow-lg rounded-r transition-transform duration-300 ease-in-out ${
+        className={`filter-bar fixed left-0 top-1/2 transform -translate-y-1/2 p-4 bg-gray-100 bg-opacity-75 shadow-lg rounded-r transition-transform duration-300 ease-in-out ${
           isVisible ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{ width: '300px', height: '70vh' }}
+        style={{ width: '250px', height: '60vh' }}
       >
-        {/* Close Button with X */}
+        {/* close button (X) */}
         {isVisible && (
           <button
             onClick={toggleFilters}
-            className="absolute top-1/2 right-[-30px] transform -translate-y-1/2 p-2 bg-blue-500 text-white rounded-full focus:outline-none flex items-center justify-center"
-            style={{ height: '70px', width: '70px' }}
+            className="absolute top-4 right-[-20px] p-2 bg-blue-500 text-white rounded-full focus:outline-none flex items-center justify-center"
+            style={{ height: '50px', width: '50px' }}
           >
-            <FaTimes size={20} />
+            <FaTimes size={16} />
           </button>
         )}
 
-        {/* Filter Heading */}
-        <h2 className="text-2xl mb-4 font-bold text-gray-800">Filter Service Requests</h2>
+        {/* filter heading */}
+        <h2 className="text-xl mb-4 font-bold text-gray-800">Filter Requests</h2>
 
-        <form>
-          {/* Department Filter */}
+        {/* filter type */}
+        <div className="mb-4">
+          <label htmlFor="filterType" className="block text-gray-700 mb-1">Filter By:</label>
+          <select
+            id="filterType"
+            name="filterType"
+            value={filterType}
+            onChange={handleFilterTypeChange}
+            className="w-full p-2 rounded bg-white border"
+          >
+            <option value="service">Service Request</option>
+            <option value="ward">Ward</option>
+          </select>
+        </div>
+
+        {/* service request filter */}
+        {filterType === 'service' && (
           <div className="filter-options mb-4">
-            <label htmlFor="department" className="block text-gray-700 mb-1">Department:</label>
+            <label htmlFor="department" className="block text-gray-700 mb-1">Service Request:</label>
             <select id="department" name="department" className="w-full p-2 rounded bg-white border">
               <option value="all">All Departments</option>
               <option value="3-day-parking-infraction">3 Day Parking Infraction</option>
               <option value="abandoned-vehicle">Abandoned Vehicle</option>
               <option value="accessibility-concerns-buildings">Accessibility Concerns - Buildings</option>
-              <option value="alley-repair-flooding">Alley Repair / Flooding"</option>
+              <option value="alley-repair-flooding">Alley Repair / Flooding</option>
               <option value="building-condition-complaint">Building Condition Complaint</option>
               <option value="building-land-improper-use">Building / Land - Improper Use</option>
               <option value="construction-site-conditions">Construction Site Conditions</option>
@@ -93,12 +113,31 @@ const Filter = () => {
               <option value="snow-removal-emergency">Snow Removal - Emergency</option>
               <option value="tree-maintenance">Tree Maintenance</option>
               <option value="yard-waste-not-collected">Yard Waste Not Collected</option>
-             
             </select>
           </div>
+        )}
 
-          {/* Additional Filter Options */}
-        </form>
+        {/* ward filter */}
+        {filterType === 'ward' && (
+          <div className="filter-options mb-4">
+            <label htmlFor="ward" className="block text-gray-700 mb-1">Ward:</label>
+            <select id="ward" name="ward" className="w-full p-2 rounded bg-white border">
+              <option value="all">All Wards</option>
+              <option value="ward-1">Ward 1</option>
+              <option value="ward-2">Ward 2</option>
+              <option value="ward-3">Ward 3</option>
+              <option value="ward-4">Ward 4</option>
+              <option value="ward-5">Ward 5</option>
+              <option value="ward-6">Ward 6</option>
+              <option value="ward-7">Ward 7</option>
+              <option value="ward-8">Ward 8</option>
+              <option value="ward-9">Ward 9</option>
+              <option value="ward-10">Ward 10</option>
+            </select>
+          </div>
+        )}
+
+      
       </div>
     </div>
   );
