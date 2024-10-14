@@ -19,7 +19,7 @@ const Filter = () => {
       {!isVisible && (
         <button
           onClick={toggleFilters}
-          className="fixed top-1/2 left-0 transform -translate-y-1/2 p-2 bg-blue-500 text-white rounded-r focus:outline-none z-10 flex items-center justify-center"
+          className="fixed top-1/2 left-0 transform -translate-y-1/2 p-2 bg-gray-800 text-white rounded-r focus:outline-none z-10 flex items-center justify-center"
           style={{ height: '50px', width: '50px' }}
         >
           <FaArrowRight size={16} />
@@ -37,7 +37,7 @@ const Filter = () => {
         {isVisible && (
           <button
             onClick={toggleFilters}
-            className="absolute top-4 right-[-20px] p-2 bg-blue-500 text-white rounded-full focus:outline-none flex items-center justify-center"
+            className="absolute top-4 right-[-20px] p-2 bg-gray-800 text-white rounded-full focus:outline-none flex items-center justify-center"
             style={{ height: '50px', width: '50px' }}
           >
             <FaTimes size={16} />
