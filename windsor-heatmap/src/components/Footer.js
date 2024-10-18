@@ -1,5 +1,6 @@
 import React from 'react';
 
+//having issues with flex box or map, the map is overfilling the footer
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 

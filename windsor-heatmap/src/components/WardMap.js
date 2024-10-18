@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
+
+//main component to display the map
 const WardMap = () => {
+  //states to hold geojson data, loading status, and any errors
   const [geoData, setGeoData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  //makes sure our geo json is ok
+  //once component is ok, fetch the geojson data, if its good it'll set the data with .then and if not handle error catches it
   useEffect(() => {
     fetch('/data/ward_boundaries.geojson')
       .then(response => {
@@ -39,7 +42,7 @@ const WardMap = () => {
     return <div>Error: No data available</div>;
   }
 
-//style of the wards
+  //style of the wards for how we see it
   const geoJSONStyle = {
     color: "blue",
     weight: 2,
@@ -47,24 +50,27 @@ const WardMap = () => {
     fillOpacity: 0.4
   };
 
-  //makeshift oncick to get ward feature
+  //makeshift oncick to get ward number
   const onEachFeature = (feature, layer) => {
     if (feature.properties && feature.properties["Ward Number"]) {
       layer.bindPopup(`Ward: ${feature.properties["Ward Number"]}`);
     }
   };
 
-  //container for the map and functions to call
+  //main return of the component that renders the map
   return (
+    //Sets our zoom level and center of map
     <MapContainer
       center={[42.317432, -83.026772]}
       zoom={12}
       style={{ height: '100%', width: '100%' }} 
     >
+      
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
+      {/* Displays the geojson data on the map if it loads */}
       {geoData && (
         <GeoJSON
           data={geoData}

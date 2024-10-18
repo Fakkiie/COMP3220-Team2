@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 
+
+//handles our filter options
 const Filter = () => {
   const [filterType, setFilterType] = useState('service');
 
+  //updates the filters depending on ward or service
   const handleFilterTypeChange = (e) => {
     setFilterType(e.target.value);
   };
@@ -27,7 +30,7 @@ const Filter = () => {
         </select>
       </div>
 
-      {/* Service Request Filter */}
+      {/* Service Request Filter, if it is selected it is rendered */}
       {filterType === 'service' && (
         <div className="filter-options mb-4">
           <label htmlFor="department" className="block text-gray-700 mb-1">Service Request:</label>
@@ -82,7 +85,7 @@ const Filter = () => {
         </div>
       )}
 
-      {/* Ward Filter */}
+      {/* Ward Filter, if it is selected it is rendered */}
       {filterType === 'ward' && (
         <div className="filter-options mb-4">
           <label htmlFor="ward" className="block text-gray-700 mb-1">Ward:</label>

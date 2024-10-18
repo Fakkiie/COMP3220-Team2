@@ -1,5 +1,6 @@
 import React from 'react';
 
+//header component that will display the name of our project and should hold upload data
 const Header = () => {
   return (
     <header className="bg-gray-800 text-white p-3 shadow-sm">

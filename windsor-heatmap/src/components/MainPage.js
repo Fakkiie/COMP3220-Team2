@@ -23,8 +23,8 @@ const MainPage = () => {
             <WardMap />
           </div>
         </div>
+       
       </div>
-
     </div>
   );
 };
