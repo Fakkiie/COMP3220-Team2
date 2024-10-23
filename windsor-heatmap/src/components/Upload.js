@@ -86,10 +86,10 @@ const Upload = () => {
     //handles the submit and will fetch from our python to receive updated json but does nothing for now
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await fetch("/api/uploadData", {
+        const response = await fetch("", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": ""
             },
             body: JSON.stringify(formData)
         });
