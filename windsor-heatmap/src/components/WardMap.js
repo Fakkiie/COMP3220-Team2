@@ -59,7 +59,7 @@ const WardMap = () => {
 
   //main return of the component that renders the map
   return (
-    //Sets our zoom level and center of map
+    //sets our zoom level and center of map
     <MapContainer
       center={[42.317432, -83.026772]}
       zoom={12}
