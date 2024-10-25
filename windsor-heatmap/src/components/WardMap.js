@@ -59,13 +59,16 @@ const WardMap = () => {
 
   //main return of the component that renders the map
   return (
-    //sets our zoom level and center of map
+    //sets our zoom level and center of map, as well as max zoom and border so they cant scroll away
     <MapContainer
-      center={[42.317432, -83.026772]}
-      zoom={12}
-      style={{ height: '100%', width: '100%' }} 
+    center={[42.317432, -83.026772]}
+    zoom={12}
+    style={{ height: '94.3vh', width: '100%' }}  
+    scrollWheelZoom={true}
+    minZoom={10} 
+    maxZoom={18}  
+    maxBounds={[[42.1, -83.2], [42.5, -82.8]]} //may need to play around with this for user experience
     >
-      
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

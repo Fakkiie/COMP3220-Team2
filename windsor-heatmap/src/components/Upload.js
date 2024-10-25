@@ -153,7 +153,7 @@ const Upload = () => {
                                     />
                                 </div>
                             </div>
-                            {/*Keep description for *peace of mind* make them think the desc matters but dont take it*/}
+                            {/*Keep description for looking offical, can change this to whatever we want */}
                             <div className="flex flex-col">
                                 <label className="text-gray-700 font-medium">Description</label>
                                 <textarea
