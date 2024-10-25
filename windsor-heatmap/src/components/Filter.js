@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 
-//handles our filter options
+//has our filter options
 const Filter = () => {
   const [filterType, setFilterType] = useState('service');
 

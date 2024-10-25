@@ -1,32 +1,34 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';  
 import Header from './Header';
 import Filter from './Filter';
-//import Footer from './Footer';
 import WardMap from './WardMap';
+import Upload from './Upload';
 
 const MainPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
+      <div className="flex flex-grow">
 
-     
-      <div className="flex flex-grow overflow-hidden">
-        
-         {/* Filter Section takes up 20% */}
+        {/* filter section 20% width */}
         <div className="w-1/5 bg-gray-100 p-4 overflow-auto">
           <Filter />
         </div>
 
-        {/* Map takes up 80% */}
-        <div className="w-4/5">
-          <div className="h-full">
-            <WardMap />
-          </div>
+        {/* map section 80% width */}
+        <div className="w-4/5 flex-grow">
+          <WardMap />
         </div>
-       
       </div>
+
+      {/* upload route */}
+      <Routes>
+        <Route path="/upload" element={<Upload />} />
+      </Routes>
     </div>
   );
 };
+
 
 export default MainPage;
