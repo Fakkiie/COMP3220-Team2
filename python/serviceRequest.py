@@ -1,13 +1,14 @@
 import pandas as pd
+import json
 
-#class to process the service requests 
+# class to process the service requests
 class ServiceRequest:
-    #init the file path
+    # init the file path
     def __init__(self, file_path):
         self.file_path = file_path
         self.requests_data = None
 
-    #loads the csv file and reads it in to dataframe
+    # loads the CSV file and reads it into a dataframe
     def load_csv(self):
         try:
             self.requests_data = pd.read_csv(self.file_path)
@@ -16,26 +17,37 @@ class ServiceRequest:
             print(f"File not found: {self.file_path}")
         except Exception as e:
             print(f"An error occurred while loading the file: {e}")
-            
-    #gets a specific request based on index (this needs to change so we can read all requests in, as well as requests people upload)
-    def get_request(self, index=0):
+    
+    # groups the requests by 'Service Request Description'
+    def group_requests_by_description(self):
         if self.requests_data is not None:
             try:
-                request = self.requests_data.iloc[index]
-                return request
-            except IndexError:
-                print(f"No request found at index {index}.")
+                grouped = self.requests_data.groupby('Service Request Description').apply(lambda x: x.drop('Service Request Description', axis=1).to_dict(orient='records'))
+                return grouped.to_dict()
+            except Exception as e:
+                print(f"An error occurred while grouping the data: {e}")
         else:
             print("No data loaded. Please load the CSV file first.")
             return None
 
-#main exec for testing, same as process data
+    # writes the grouped requests to a JSON file
+    def write_to_json(self, data, output_file="groupedRequests.json"):
+        try:
+            with open(output_file, 'w') as json_file:
+                json.dump(data, json_file, indent=4)
+            print(f"Data successfully written to {output_file}")
+        except Exception as e:
+            print(f"An error occurred while writing to JSON: {e}")
+
+# main execution for testing
 if __name__ == "__main__":
     file_path = "../data/AllServiceRequests_YTD.csv"
     service_processor = ServiceRequest(file_path)
     service_processor.load_csv()
     
-    first_request = service_processor.get_request(0)
+    # Group requests by 'Service Request Description'
+    grouped_requests = service_processor.group_requests_by_description()
     
-    if first_request is not None:
-        print(first_request)
+    
+    if grouped_requests is not None:
+        service_processor.write_to_json(grouped_requests, "../windsor-heatmap/public/data/groupedRequests.json")
