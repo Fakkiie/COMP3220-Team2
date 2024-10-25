@@ -83,7 +83,8 @@ const Upload = () => {
         }
     };
     
-    //handles the submit and will fetch from our python to receive updated json but does nothing for now
+    //handles the submit and will fetch from our python to receive updated json but does nothing for now, need to set the fetch and all that
+    //once we figure out a file path
     const handleSubmit = async (e) => {
         e.preventDefault();
         const response = await fetch("", {
