@@ -66,7 +66,7 @@ const WardMap = () => {
     const maxOpacity = 1.0;  
     const minOpacity = 0.2; 
 
-    //calculates the fillOpacity based on the count of registered service
+    //calculates the fillOpacity based on the count of registered service in each ward
     const fillOpacity = count > 0 ? (count / maxRequests) * (maxOpacity - minOpacity) + minOpacity : minOpacity;
 
     return {
