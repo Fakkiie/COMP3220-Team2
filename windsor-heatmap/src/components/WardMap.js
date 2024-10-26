@@ -9,6 +9,7 @@ const WardMap = () => {
   const [geoData, setGeoData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [requestCounts, setRequestCounts] = useState({});
 
   //once component is ok, fetch the geojson data, if its good it'll set the data with .then and if not handle error catches it
   useEffect(() => {
@@ -27,6 +28,21 @@ const WardMap = () => {
         setError(error);
         setLoading(false);
       });
+
+    //fetch the json file for the Ward to be counted and register onto count per ward
+    fetch('/data/groupedRequests.json') 
+      .then(response => response.json())
+      .then(data => {
+        const counts = {};
+        Object.values(data).forEach(requestList => {
+          requestList.forEach(request => {
+            const ward = request.Ward; 
+            counts[ward] = (counts[ward] || 0) + 1;
+          });
+        });
+        console.log('Request Counts:', counts); 
+        setRequestCounts(counts);
+      });
   }, []);
 
   //Debug tools 
@@ -42,12 +58,23 @@ const WardMap = () => {
     return <div>Error: No data available</div>;
   }
 
-  //style of the wards for how we see it
-  const geoJSONStyle = {
-    color: "blue",
-    weight: 2,
-    opacity: 1,
-    fillOpacity: 0.4
+  //style of the wards for how we see it and uses the json file for the data
+  const geoJSONStyle = feature => {
+    const wardName = feature.properties["Name"]; 
+    const count = requestCounts[wardName] || 0; 
+    const maxRequests = Math.max(...Object.values(requestCounts), 1); 
+    const maxOpacity = 1.0;  
+    const minOpacity = 0.2; 
+
+    //calculates the fillOpacity based on the count of registered service in each ward
+    const fillOpacity = count > 0 ? (count / maxRequests) * (maxOpacity - minOpacity) + minOpacity : minOpacity;
+
+    return {
+      color: "blue",
+      weight: 2,
+      opacity: 1,
+      fillOpacity: fillOpacity
+    };
   };
 
   //makeshift oncick to get ward number
