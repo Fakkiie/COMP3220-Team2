@@ -83,8 +83,7 @@ const Upload = () => {
         }
     };
     
-    //handles the submit and will fetch from our python to receive updated json but does nothing for now, need to set the fetch and all that
-    //once we figure out a file path
+    //handles the submit and will fetch from our python to receive updated json but does nothing for now
     const handleSubmit = async (e) => {
         e.preventDefault();
         const response = await fetch("", {
@@ -153,7 +152,7 @@ const Upload = () => {
                                     />
                                 </div>
                             </div>
-                            {/*Keep description for looking offical, can change this to whatever we want */}
+                            {/*Keep description for *peace of mind* make them think the desc matters but dont take it*/}
                             <div className="flex flex-col">
                                 <label className="text-gray-700 font-medium">Description</label>
                                 <textarea

@@ -11,13 +11,13 @@ const MainPage = () => {
       <Header />
       <div className="flex flex-grow">
 
-        {/* filter section 20% width */}
+        {/*
         <div className="w-1/5 bg-gray-100 p-4 overflow-auto">
           <Filter />
         </div>
-
+        */}
         {/* map section 80% width */}
-        <div className="w-4/5 flex-grow">
+        <div className="w-5/5 flex-grow">
           <WardMap />
         </div>
       </div>
