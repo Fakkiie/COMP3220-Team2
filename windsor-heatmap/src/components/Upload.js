@@ -154,13 +154,13 @@ const Upload = () => {
                             </div>
                             {/*Keep description for *peace of mind* make them think the desc matters but dont take it*/}
                             <div className="flex flex-col">
-                                <label className="text-gray-700 font-medium">Description</label>
-                                <textarea
-                                    name="description"
-                                    onChange={handleChange}
-                                    className="border border-gray-300 p-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    rows="3"
-                                ></textarea>
+                            <label className="text-gray-700 font-medium">Ward</label>
+                                    <input
+                                        type="text"
+                                        name="Ward"
+                                        onChange={handleChange}
+                                        className="border border-gray-300 p-2 rounded-md shadow-sm"
+                                    />
                             </div>
 
                             <div>
