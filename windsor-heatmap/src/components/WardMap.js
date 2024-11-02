@@ -11,6 +11,16 @@ const WardMap = () => {
   const [error, setError] = useState(null);
   const [requestCounts, setRequestCounts] = useState({});
 
+  // Bounds that are quite close to Windsor
+  const windsorBounds = [
+    [42.3662, -83.1150],  
+    [42.2266, -82.8900],  
+  ];
+
+  // Min and Max zoom levels 
+  const minZoom = 12;
+  const maxZoom = 14;
+
   //once component is ok, fetch the geojson data, if its good it'll set the data with .then and if not handle error catches it
   useEffect(() => {
     fetch('/data/ward_boundaries.geojson')
@@ -92,9 +102,10 @@ const WardMap = () => {
     zoom={12}
     style={{ height: '94.3vh', width: '100%' }}  
     scrollWheelZoom={true}
-    minZoom={10} 
-    maxZoom={18}  
-    maxBounds={[[42.1, -83.2], [42.5, -82.8]]} //may need to play around with this for user experience
+    minZoom={minZoom} 
+    maxZoom={maxZoom}
+    maxBoundsViscosity={1.0}  
+    maxBounds={windsorBounds} //may need to play around with this for user experience
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
