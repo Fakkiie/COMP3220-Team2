@@ -10,6 +10,10 @@ const WardMap = () => {
   const [wardRequests, setWardRequests] = useState({});
 
   useEffect(() => {
+    //stops the user from scrolling
+    document.body.style.overflow = 'hidden';
+
+    //fetches our ward boundries from the geojson
     fetch('/data/ward_boundaries.geojson')
       .then(response => {
         if (!response.ok) throw new Error(`Failed to load GeoJSON: ${response.statusText}`);
@@ -24,6 +28,7 @@ const WardMap = () => {
         setLoading(false);
       });
 
+    //fetches the requests json
     fetch('/data/groupedRequests.json')
       .then(response => response.json())
       .then(data => {
@@ -38,21 +43,30 @@ const WardMap = () => {
       })
       .catch(err => setError(err));
 
+    //fetches requests by ward json
     fetch('/data/groupedRequestsByWard.json')
       .then(response => response.json())
       .then(data => setWardRequests(data))
       .catch(err => setError(err));
+
+    return () => {
+      //when the component is unmounted you can scroll
+      document.body.style.overflow = 'auto';
+    };
   }, []);
 
+  //displaus status of json
   if (loading) return <div>Loading map...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
+  //calculation to determine the opacity of the ward
   const geoJSONStyle = (feature) => {
     const wardName = feature.properties["Name"];
     const totalRequests = requestCounts[wardName] || 0;
     const maxRequests = Math.max(...Object.values(requestCounts), 1);
     const fillOpacity = totalRequests > 0 ? 0.2 + 0.8 * (totalRequests / maxRequests) : 0.2;
 
+    //style of the ward
     return {
       color: "blue",
       weight: 2,
@@ -61,6 +75,8 @@ const WardMap = () => {
     };
   };
 
+  //when the user clicks the ward, it will grab the ward number and display a popup of all the data in that ward
+  //from the json we fetched earlier 
   const onEachFeature = (feature, layer) => {
     const wardName = feature.properties["Name"];
     const wardData = wardRequests[wardName] || {};
@@ -79,19 +95,19 @@ const WardMap = () => {
     });
   };
 
+  //returns our map 
   return (
     <MapContainer
       center={[42.317432, -83.026772]}
       zoom={12}
-      style={{ height: '94.3vh', width: '100%' }}
+      style={{ height: '100vh', width: '100%' }}
       scrollWheelZoom={true}
       minZoom={10}
       maxZoom={18}
       maxBounds={[[42.1, -83.2], [42.5, -82.8]]}
-    >
+    >      
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; OpenStreetMap contributors'
+         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {geoData && (
         <GeoJSON

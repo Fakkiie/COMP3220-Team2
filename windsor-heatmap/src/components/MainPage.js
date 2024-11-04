@@ -15,12 +15,7 @@ const MainPage = () => {
         <WardMap />
       </div>
 
-      {/*link to filter page */}
-      <div className="w-full bg-gray-100 p-4 flex justify-center">
-        <Link to="/filter" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          View Service Request Statistics
-        </Link>
-      </div>
+     
 
       {/* routes */}
       <Routes>

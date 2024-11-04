@@ -3,13 +3,14 @@ import Header from './Header';
 import Footer from './Footer';
 
 const FilterPage = () => {
+  //states for storing data, filtered data, filtered options and loading options
   const [data, setData] = useState([]); 
   const [filteredData, setFilteredData] = useState([]); 
   const [filterType, setFilterType] = useState('All');
   const [filterWard, setFilterWard] = useState('All'); 
   const [loading] = useState(true); 
 
-  //fetch json path
+  //fetch json path will uncomment when we figure out json situation i think json file is too large even to try and stagnate data upload
   /*useEffect(() => {
     fetch('/data/groupedRequests.json')
       .then(response => response.json())
@@ -20,7 +21,7 @@ const FilterPage = () => {
       });
   }, []);
 
-  //filters based on selection
+  //filters based on selection chosen by user, then updates the state chosen by the user
   useEffect(() => {
     let filtered = data;
 
@@ -40,7 +41,7 @@ const FilterPage = () => {
     <div className="min-h-screen bg-gray-100">
       <Header />
 
-      {/* Main Container */}
+      {/* main container */}
       <div className="p-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
           Service Request Statistics
@@ -48,7 +49,7 @@ const FilterPage = () => {
 
         <div className="bg-white shadow-lg rounded-lg p-6 space-y-8">
           
-          {/* filter section */}
+          {/* filter section with filter dropdown*/}
           <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">Filter Requests</h2>
             <div className="mb-4">
@@ -108,6 +109,7 @@ const FilterPage = () => {
               </select>
             </div>
 
+            {/*drop down for ward*/}
             <div className="mb-4">
               <label htmlFor="filterWard" className="block text-gray-700 mb-1">Filter By Ward:</label>
               <select
@@ -147,6 +149,7 @@ const FilterPage = () => {
                     <th className="px-4 py-2 border">Created Date</th>
                   </tr>
                 </thead>
+                {/*table with filtered data or message for no data*/}
                 <tbody>
                   {filteredData.length === 0 ? (
                     <tr>
