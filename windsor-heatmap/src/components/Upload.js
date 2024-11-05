@@ -9,7 +9,7 @@ const Upload = () => {
         department: "",
         address: "",
         street: "",
-        description: ""
+        ward: ""
     });
 
     //sets a service request to a department
@@ -67,33 +67,49 @@ const Upload = () => {
     //handles the department change for the service request
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-       
-        if (name === "serviceRequest") {
-            setFormData(prevData => ({
-                ...prevData,
-                serviceRequest: value,
-                department: serviceRequests[value] || "" 
-            }));
-        } else {
-            setFormData(prevData => ({
-                ...prevData,
-                [name]: value
-            }));
-        }
+        setFormData(prevData => ({
+            ...prevData,
+            [name]: value,
+            department: name === "serviceRequest" ? serviceRequests[value] || "" : prevData.department
+        }));
     };
     
-    //handles the submit and will fetch from our python to receive updated json but does nothing for now
+    //handles our form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await fetch("", {
-            method: "POST",
-            headers: {
-                "Content-Type": ""
-            },
-            body: JSON.stringify(formData)
-        });
         
+        //validation
+        if (!formData.serviceRequest || !formData.department || !formData.address || !formData.street || !formData.ward) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/add-service-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                alert('Service request submitted successfully');
+                setFormData({
+                    serviceRequest: '',
+                    department: '',
+                    address: '',
+                    street: '',
+                    ward: '',
+                });
+            } else {
+                const errorData = await response.json();
+                alert(`Failed to submit service request: ${errorData.error}`);
+            }
+        } catch (error) {
+            console.error('Error submitting service request:', error);
+            alert('An error occurred while submitting the request');
+        }
     };
 
     return (

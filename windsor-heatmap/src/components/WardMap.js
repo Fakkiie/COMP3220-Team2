@@ -10,10 +10,10 @@ const WardMap = () => {
   const [wardRequests, setWardRequests] = useState({});
 
   useEffect(() => {
-    //stops the user from scrolling
+    //stop user scrolling
     document.body.style.overflow = 'hidden';
 
-    //fetches our ward boundries from the geojson
+    //fetch geojson 
     fetch('/data/ward_boundaries.geojson')
       .then(response => {
         if (!response.ok) throw new Error(`Failed to load GeoJSON: ${response.statusText}`);
@@ -28,29 +28,20 @@ const WardMap = () => {
         setLoading(false);
       });
 
-    //fetches the requests json
-    fetch('/data/groupedRequests.json')
+    //fetch service requests from api
+    fetch('/api/grouped-requests')
       .then(response => response.json())
-      .then(data => {
-        const counts = {};
-        Object.values(data).forEach(requestList => {
-          requestList.forEach(request => {
-            const ward = request.Ward;
-            counts[ward] = (counts[ward] || 0) + 1;
-          });
-        });
-        setRequestCounts(counts);
-      })
+      .then(data => setRequestCounts(data))
       .catch(err => setError(err));
 
-    //fetches requests by ward json
-    fetch('/data/groupedRequestsByWard.json')
+    //fetch detailed requests from api
+    fetch('/api/detailed-requests')
       .then(response => response.json())
       .then(data => setWardRequests(data))
       .catch(err => setError(err));
 
+    //allows scrolling when component unmounts
     return () => {
-      //when the component is unmounted you can scroll
       document.body.style.overflow = 'auto';
     };
   }, []);
