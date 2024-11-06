@@ -8,35 +8,30 @@ const FilterPage = () => {
   const [filterType, setFilterType] = useState('All');
   const [filterWard, setFilterWard] = useState('All');
   const [loading, setLoading] = useState(true);
-  const [batchIndex, setBatchIndex] = useState(0); // Track current batch index
 
-  const BATCH_SIZE = 100; // Number of records to fetch at once
-
-  const fetchBatch = () => {
+  useEffect(() => {
     setLoading(true);
 
-    fetch(`https://comp3220-team2.onrender.com/api/service?start=${batchIndex}&limit=${BATCH_SIZE}`)
-      .then(response => response.json())
+    fetch('https://comp3220-team2.onrender.com/api/service')
+      .then(response => {
+        console.log("Service API response status:", response.status);
+        return response.json();
+      })
       .then(fetchedData => {
-        // Append the fetched data to existing data
-        setData(prevData => [...prevData, ...fetchedData]);
-        setFilteredData(prevData => [...prevData, ...fetchedData]);
-        setBatchIndex(prevIndex => prevIndex + BATCH_SIZE);
+        console.log("Fetched data for FilterPage:", fetchedData);
+        setData(fetchedData);
+        setFilteredData(fetchedData);
         setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching service requests:', error);
         setLoading(false);
       });
-  };
-
-  // Fetch the first batch when the component mounts
-  useEffect(() => {
-    fetchBatch();
   }, []);
 
-  // Update filtered data when filters change
+  // Update the filtered data when filters change
   useEffect(() => {
+    console.log("Filtering data with filters:", { filterType, filterWard });
     let filtered = data;
 
     if (filterType !== 'All') {
@@ -47,6 +42,7 @@ const FilterPage = () => {
       filtered = filtered.filter(item => item.ward === filterWard);
     }
 
+    console.log("Filtered data result:", filtered);
     setFilteredData(filtered);
   }, [filterType, filterWard, data]);
 
@@ -72,7 +68,7 @@ const FilterPage = () => {
                 className="w-full p-3 rounded bg-gray-200 border border-gray-300"
               >
                 <option value="All">All Departments</option>
-                {/* Add additional options dynamically based on data */}
+                {/* Add options here as needed */}
               </select>
             </div>
 
@@ -85,7 +81,7 @@ const FilterPage = () => {
                 className="w-full p-3 rounded bg-gray-200 border border-gray-300"
               >
                 <option value="All">All Wards</option>
-                {/* Add additional ward options dynamically based on data */}
+                {/* Add options for each ward */}
               </select>
             </div>
           </div>
@@ -124,16 +120,6 @@ const FilterPage = () => {
                 </tbody>
               </table>
             )}
-          </div>
-
-          {/* Button to load more data */}
-          <div className="text-center">
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-              onClick={fetchBatch}
-            >
-              Load More
-            </button>
           </div>
         </div>
       </div>
