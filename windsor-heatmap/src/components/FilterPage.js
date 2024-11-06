@@ -8,28 +8,34 @@ const FilterPage = () => {
   const [filterType, setFilterType] = useState('All');
   const [filterWard, setFilterWard] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [batchIndex, setBatchIndex] = useState(0); // Track current batch index
 
-  useEffect(() => {
+  const BATCH_SIZE = 100; // Number of records to fetch at once
+
+  const fetchBatch = () => {
     setLoading(true);
 
-    fetch('https://comp3220-team2.onrender.com/api/service', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
+    fetch(`https://comp3220-team2.onrender.com/api/service?start=${batchIndex}&limit=${BATCH_SIZE}`)
       .then(response => response.json())
       .then(fetchedData => {
-        setData(fetchedData);
-        setFilteredData(fetchedData);
+        // Append the fetched data to existing data
+        setData(prevData => [...prevData, ...fetchedData]);
+        setFilteredData(prevData => [...prevData, ...fetchedData]);
+        setBatchIndex(prevIndex => prevIndex + BATCH_SIZE);
         setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching service requests:', error);
         setLoading(false);
       });
+  };
+
+  // Fetch the first batch when the component mounts
+  useEffect(() => {
+    fetchBatch();
   }, []);
 
-  // Update the filtered data when filters change
+  // Update filtered data when filters change
   useEffect(() => {
     let filtered = data;
 
@@ -48,19 +54,15 @@ const FilterPage = () => {
     <div className="min-h-screen bg-gray-100">
       <Header />
 
-      {/* Main container */}
       <div className="p-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
           Service Request Statistics
         </h1>
 
         <div className="bg-white shadow-lg rounded-lg p-6 space-y-8">
-          
-          {/* Filter Section */}
           <div className="bg-gray-50 p-4 rounded-lg shadow-inner">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">Filter Requests</h2>
             
-            {/* Filter by Service Request */}
             <div className="mb-4">
               <label htmlFor="filterType" className="block text-gray-700 mb-1">Filter By Service Request:</label>
               <select
@@ -70,11 +72,10 @@ const FilterPage = () => {
                 className="w-full p-3 rounded bg-gray-200 border border-gray-300"
               >
                 <option value="All">All Departments</option>
-                {/* Add options here as needed */}
+                {/* Add additional options dynamically based on data */}
               </select>
             </div>
 
-            {/* Filter by Ward */}
             <div className="mb-4">
               <label htmlFor="filterWard" className="block text-gray-700 mb-1">Filter By Ward:</label>
               <select
@@ -84,12 +85,11 @@ const FilterPage = () => {
                 className="w-full p-3 rounded bg-gray-200 border border-gray-300"
               >
                 <option value="All">All Wards</option>
-                {/* Add options for each ward */}
+                {/* Add additional ward options dynamically based on data */}
               </select>
             </div>
           </div>
 
-          {/* Table displaying filtered data */}
           <div className="bg-gray-50 p-4 rounded-lg shadow-inner overflow-auto">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">Service Request Statistics</h2>
             {loading ? (
@@ -105,8 +105,6 @@ const FilterPage = () => {
                     <th className="px-4 py-2 border">Created Date</th>
                   </tr>
                 </thead>
-                {/* Display filtered data */}
-               
                 <tbody>
                   {filteredData.length === 0 ? (
                     <tr>
@@ -124,9 +122,18 @@ const FilterPage = () => {
                     ))
                   )}
                 </tbody>
-
               </table>
             )}
+          </div>
+
+          {/* Button to load more data */}
+          <div className="text-center">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={fetchBatch}
+            >
+              Load More
+            </button>
           </div>
         </div>
       </div>

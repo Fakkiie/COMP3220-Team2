@@ -95,20 +95,19 @@ const WardMap = () => {
   const onEachFeature = (feature, layer) => {
     const wardName = feature.properties["Name"];
     const wardData = wardRequests[wardName] || {};
-
-    const popupContent = `<div class="max-h-32 overflow-y-auto p-2">
-      <strong>${wardName}</strong><br />
-      ${Object.keys(wardData).length > 0
-        ? Object.entries(wardData).map(([type, count]) => `${type}: ${count}`).join('<br />')
-        : "No requests available"}
+  
+    const popupContent = `
+      <div class="max-h-32 overflow-y-auto p-2">
+        <strong>${wardName}</strong><br />
+        ${Object.entries(wardData)
+          .map(([department, count]) => `${department}: ${count}`)
+          .join('<br />') || "No requests available"}
       </div>`;
-
+  
     layer.bindPopup(popupContent);
-    layer.on('click', () => {
-      layer.openPopup();
-    });
+    layer.on('click', () => layer.openPopup());
   };
-
+  
   return (
     <MapContainer
       center={[42.317432, -83.026772]}
