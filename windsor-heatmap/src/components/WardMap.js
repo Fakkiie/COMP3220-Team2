@@ -87,7 +87,7 @@ const WardMap = () => {
   const onEachFeature = (feature, layer) => {
     const wardName = feature.properties["Name"];
     const wardData = wardRequests[wardName] || {};
-
+  
     const popupContent = `
       <div class="max-h-32 overflow-y-auto p-2">
         <strong>${wardName}</strong><br />
@@ -95,12 +95,13 @@ const WardMap = () => {
           .map(([department, count]) => `${department}: ${count}`)
           .join('<br />') || "No requests available"}
       </div>`;
-
+  
     console.log(`Adding popup for ward ${wardName}:`, wardData);
-
+  
     layer.bindPopup(popupContent);
     layer.on('click', () => layer.openPopup());
   };
+  
 
   return (
     <MapContainer

@@ -8,28 +8,45 @@ const FilterPage = () => {
   const [filterType, setFilterType] = useState('All');
   const [filterWard, setFilterWard] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [batchSize] = useState(100); // Batch size for each incremental load
+  const [batchIndex, setBatchIndex] = useState(0);
 
   useEffect(() => {
-    setLoading(true);
+    fetchData(batchIndex); // Fetch initial batch of data
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll); // Clean up on unmount
+  }, []);
 
-    fetch('https://comp3220-team2.onrender.com/api/service')
-      .then(response => {
-        console.log("Service API response status:", response.status);
-        return response.json();
-      })
+  // Fetch data in batches
+  const fetchData = (batch) => {
+    setLoading(true);
+    fetch(`https://comp3220-team2.onrender.com/api/service?start=${batch * batchSize}&limit=${batchSize}`)
+      .then(response => response.json())
       .then(fetchedData => {
         console.log("Fetched data for FilterPage:", fetchedData);
-        setData(fetchedData);
-        setFilteredData(fetchedData);
+        setData(prevData => [...prevData, ...fetchedData]); // Append new data to existing data
+        setFilteredData(prevData => [...prevData, ...fetchedData]); // Update filtered data
         setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching service requests:', error);
         setLoading(false);
       });
-  }, []);
+  };
 
-  // Update the filtered data when filters change
+  // Infinite scrolling handler
+  const handleScroll = () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && !loading) {
+      setBatchIndex(prevIndex => {
+        const newIndex = prevIndex + 1;
+        fetchData(newIndex); // Fetch the next batch
+        return newIndex;
+      });
+    }
+  };
+
+  // Filter the data based on selected filters
   useEffect(() => {
     console.log("Filtering data with filters:", { filterType, filterWard });
     let filtered = data;
@@ -68,7 +85,7 @@ const FilterPage = () => {
                 className="w-full p-3 rounded bg-gray-200 border border-gray-300"
               >
                 <option value="All">All Departments</option>
-                {/* Add options here as needed */}
+                {/* Populate dynamically based on data */}
               </select>
             </div>
 
@@ -81,14 +98,14 @@ const FilterPage = () => {
                 className="w-full p-3 rounded bg-gray-200 border border-gray-300"
               >
                 <option value="All">All Wards</option>
-                {/* Add options for each ward */}
+                {/* Populate dynamically based on data */}
               </select>
             </div>
           </div>
 
           <div className="bg-gray-50 p-4 rounded-lg shadow-inner overflow-auto">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">Service Request Statistics</h2>
-            {loading ? (
+            {loading && filteredData.length === 0 ? (
               <div className="text-center py-4">Loading data...</div>
             ) : (
               <table className="min-w-full text-left text-sm">
@@ -120,6 +137,7 @@ const FilterPage = () => {
                 </tbody>
               </table>
             )}
+            {loading && <div className="text-center py-4">Loading more data...</div>}
           </div>
         </div>
       </div>
