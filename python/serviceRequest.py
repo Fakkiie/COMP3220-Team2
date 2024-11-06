@@ -45,7 +45,7 @@ if __name__ == "__main__":
     service_processor = ServiceRequest(file_path)
     service_processor.load_csv()
     
-    # Group requests by 'Service Request Description'
+    # group requests by 'Service Request Description'
     grouped_requests = service_processor.group_requests_by_description()
     
     
