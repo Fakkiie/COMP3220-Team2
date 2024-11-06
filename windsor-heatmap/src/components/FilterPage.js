@@ -106,6 +106,7 @@ const FilterPage = () => {
                   </tr>
                 </thead>
                 {/* Display filtered data */}
+               
                 <tbody>
                   {filteredData.length === 0 ? (
                     <tr>
@@ -115,14 +116,15 @@ const FilterPage = () => {
                     filteredData.map((item, index) => (
                       <tr key={index} className={index % 2 === 0 ? "bg-gray-100" : ""}>
                         <td className="px-4 py-2 border">{item.ward}</td>
-                        <td className="px-4 py-2 border">{item.type}</td>
+                        <td className="px-4 py-2 border">{item.type || 'N/A'}</td>
                         <td className="px-4 py-2 border">{item.department}</td>
-                        <td className="px-4 py-2 border">{item["Method Received"]}</td>
-                        <td className="px-4 py-2 border">{item["Created Date"]}</td>
+                        <td className="px-4 py-2 border">{item.methodreceived}</td>
+                        <td className="px-4 py-2 border">{item.createddate}</td>
                       </tr>
                     ))
                   )}
                 </tbody>
+
               </table>
             )}
           </div>

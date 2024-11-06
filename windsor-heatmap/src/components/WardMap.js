@@ -49,7 +49,7 @@ const WardMap = () => {
         setError(err);
       });
 
-    // Fetch ward data from the backend
+    // Fetch all service requests data
     fetch('https://comp3220-team2.onrender.com/api/service')
       .then(response => response.json())
       .then(data => {
@@ -73,15 +73,8 @@ const WardMap = () => {
     };
   }, []);
 
-  if (loading) {
-    console.log("Loading map data...");
-    return <div>Loading map...</div>;
-  }
-
-  if (error) {
-    console.error("Map error:", error);
-    return <div>Error: {error.message}</div>;
-  }
+  if (loading) return <div>Loading map...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   // Styling function to adjust opacity based on request count
   const geoJSONStyle = (feature) => {
@@ -91,8 +84,6 @@ const WardMap = () => {
     const maxRequests = Math.max(...Object.values(requestCounts).map(data => Object.values(data).reduce((a, b) => a + parseInt(b), 0)), 1);
     const fillOpacity = totalRequests > 0 ? 0.2 + 0.8 * (totalRequests / maxRequests) : 0.2;
 
-    console.log(`Styling ward ${wardName} with ${totalRequests} requests (opacity: ${fillOpacity})`);
-    
     return {
       color: "blue",
       weight: 2,
@@ -111,8 +102,6 @@ const WardMap = () => {
         ? Object.entries(wardData).map(([type, count]) => `${type}: ${count}`).join('<br />')
         : "No requests available"}
       </div>`;
-
-    console.log(`Adding popup for ward ${wardName}:`, wardData);
 
     layer.bindPopup(popupContent);
     layer.on('click', () => {

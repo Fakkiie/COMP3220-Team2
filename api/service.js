@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const query = 'SELECT * FROM servicerequests LIMIT 100';
+    const query = 'SELECT * FROM servicerequests';
     const { rows } = await pool.query(query);
     res.status(200).json(rows);
   } catch (error) {
