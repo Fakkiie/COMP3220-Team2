@@ -13,7 +13,7 @@ const WardMap = () => {
     console.log("Starting WardMap component");
     document.body.style.overflow = 'hidden';
 
-    // Fetch GeoJSON Data
+    //fetch GeoJSON Data
     fetch('/data/ward_boundaries.geojson')
       .then(response => {
         if (!response.ok) throw new Error(`Failed to load GeoJSON: ${response.statusText}`);
@@ -30,7 +30,7 @@ const WardMap = () => {
         setLoading(false);
       });
 
-    // Fetch Grouped Requests Data
+    //fetch grouped data
     fetch('/api/grouped')
       .then(response => response.json())
       .then(data => {
@@ -42,7 +42,7 @@ const WardMap = () => {
         setError(err);
       });
 
-    // Fetch Ward Requests Data
+    //fetch ward data
     fetch('/api/service')
       .then(response => response.json())
       .then(data => {

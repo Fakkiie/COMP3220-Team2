@@ -6,7 +6,7 @@ import serviceHandler from './service.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5009;
+const PORT = process.env.PORT || 5008;
 
 app.get('/api/grouped', groupedHandler);
 app.get('/api/service', serviceHandler);
