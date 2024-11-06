@@ -13,7 +13,7 @@ const WardMap = () => {
     console.log("Starting WardMap component");
     document.body.style.overflow = 'hidden';
 
-    //fetch GeoJSON Data
+    // Fetch GeoJSON Data
     fetch('/data/ward_boundaries.geojson')
       .then(response => {
         if (!response.ok) throw new Error(`Failed to load GeoJSON: ${response.statusText}`);
@@ -30,24 +30,38 @@ const WardMap = () => {
         setLoading(false);
       });
 
-    //fetch grouped data
-    fetch('/api/grouped')
+    // Fetch grouped data from the backend
+    fetch('https://comp3220-team2.onrender.com/api/grouped')
       .then(response => response.json())
       .then(data => {
         console.log("Fetched grouped requests data:", data);
-        setRequestCounts(data);
+
+        // Convert data to a more accessible format
+        const counts = {};
+        data.forEach(({ ward, department, count }) => {
+          if (!counts[ward]) counts[ward] = {};
+          counts[ward][department] = count;
+        });
+        setRequestCounts(counts);
       })
       .catch(err => {
         console.error("Error fetching grouped requests:", err);
         setError(err);
       });
 
-    //fetch ward data
-    fetch('/api/service')
+    // Fetch ward data from the backend
+    fetch('https://comp3220-team2.onrender.com/api/service')
       .then(response => response.json())
       .then(data => {
         console.log("Fetched service requests data:", data);
-        setWardRequests(data);
+
+        // Process ward data for easier lookup
+        const wardData = data.reduce((acc, item) => {
+          if (!acc[item.ward]) acc[item.ward] = {};
+          acc[item.ward][item.department] = (acc[item.ward][item.department] || 0) + 1;
+          return acc;
+        }, {});
+        setWardRequests(wardData);
       })
       .catch(err => {
         console.error("Error fetching ward requests:", err);
@@ -69,10 +83,12 @@ const WardMap = () => {
     return <div>Error: {error.message}</div>;
   }
 
+  // Styling function to adjust opacity based on request count
   const geoJSONStyle = (feature) => {
     const wardName = feature.properties["Name"];
-    const totalRequests = requestCounts[wardName] || 0;
-    const maxRequests = Math.max(...Object.values(requestCounts), 1);
+    const wardData = requestCounts[wardName] || {};
+    const totalRequests = Object.values(wardData).reduce((acc, count) => acc + parseInt(count), 0);
+    const maxRequests = Math.max(...Object.values(requestCounts).map(data => Object.values(data).reduce((a, b) => a + parseInt(b), 0)), 1);
     const fillOpacity = totalRequests > 0 ? 0.2 + 0.8 * (totalRequests / maxRequests) : 0.2;
 
     console.log(`Styling ward ${wardName} with ${totalRequests} requests (opacity: ${fillOpacity})`);
@@ -113,9 +129,9 @@ const WardMap = () => {
       minZoom={10}
       maxZoom={18}
       maxBounds={[[42.1, -83.2], [42.5, -82.8]]}
-    >      
+    >
       <TileLayer
-         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {geoData && (
         <GeoJSON

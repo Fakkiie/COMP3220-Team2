@@ -3,16 +3,16 @@ import Header from './Header';
 import Footer from './Footer';
 
 const FilterPage = () => {
-  const [data, setData] = useState([]); 
-  const [filteredData, setFilteredData] = useState([]); 
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [filterType, setFilterType] = useState('All');
-  const [filterWard, setFilterWard] = useState('All'); 
-  const [loading, setLoading] = useState(true); 
+  const [filterWard, setFilterWard] = useState('All');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-  
-    fetch('/api/service', {
+
+    fetch('https://comp3220-team2.onrender.com/api/service', {
       headers: {
         'Content-Type': 'application/json'
       },
@@ -28,7 +28,7 @@ const FilterPage = () => {
         setLoading(false);
       });
   }, []);
-  
+
   // Update the filtered data when filters change
   useEffect(() => {
     let filtered = data;
