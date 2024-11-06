@@ -18,7 +18,7 @@ class ServiceRequestByWard:
     def group_requests_by_ward(self):
         if self.requests_data is not None:
             try:
-                # Group by 'Ward' and 'Service Request Description' and count occurrences
+                #group by ward and 'Service Request Description' and count occurrences
                 grouped = self.requests_data.groupby(['Ward', 'Service Request Description']).size().unstack(fill_value=0)
                 grouped_data = grouped.to_dict(orient="index")
                 return grouped_data
