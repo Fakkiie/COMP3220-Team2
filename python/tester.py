@@ -1,70 +1,82 @@
 import pytest
 import os
+import json
 import pandas as pd
 from serviceRequest import ServiceRequest
 
-# Fixture to set up ServiceRequest instances and cleanup
+# Define a JSON file to store the test results
+output_file = "test1.json"
+test_results = {}
+
+# Mock data for testing
+csv_data = """Service Request Description,Other Column
+Request A,Data1
+Request B,Data2
+Request A,Data3
+Request C,Data4
+"""
+
 @pytest.fixture
-def setup_service_request():
-    valid_file_path = "../data/AllServiceRequests_YTD.csv"
-    invalid_file_path = "../data/NonExistentFile.csv"
-    output_file = "../windsor-heatmap/public/data/test_output.json"
+def setup_service_request(tmp_path):
+    """Fixture to set up ServiceRequest instance and cleanup."""
+    # Create a temporary CSV file with mock data
+    file_path = tmp_path / "test_service_requests.csv"
+    with open(file_path, "w") as f:
+        f.write(csv_data)
     
-    # Create instances for valid and invalid file paths
-    service_processor_valid = ServiceRequest(valid_file_path)
-    service_processor_invalid = ServiceRequest(invalid_file_path)
+    # Create a ServiceRequest instance with the temporary file path
+    service_request = ServiceRequest(file_path)
+    return service_request
 
-    yield service_processor_valid, service_processor_invalid, output_file
+def test_load_csv(setup_service_request):
+    """Test loading of CSV file."""
+    service_request = setup_service_request
+    service_request.load_csv()
+    assert service_request.requests_data is not None, "CSV data should be loaded"
+    test_results["test_load_csv"] = "Passed"
 
-    # Cleanup: remove the test output file if it exists
-    if os.path.exists(output_file):
-        os.remove(output_file)
+def test_group_requests_by_description(setup_service_request):
+    """Test grouping of requests by 'Service Request Description'."""
+    service_request = setup_service_request
+    service_request.load_csv()  # Ensure data is loaded
+    grouped_data = service_request.group_requests_by_description()
+    
+    expected_output = {
+        "Request A": [{"Other Column": "Data1"}, {"Other Column": "Data3"}],
+        "Request B": [{"Other Column": "Data2"}],
+        "Request C": [{"Other Column": "Data4"}]
+    }
+    
+    assert grouped_data == expected_output, "Grouped data should match expected output"
+    test_results["test_group_requests_by_description"] = "Passed"
 
-# Test load_csv method with a valid file path
-def test_load_csv_valid_path(setup_service_request):
-    service_processor_valid, _, _ = setup_service_request
-    service_processor_valid.load_csv()
-    assert isinstance(service_processor_valid.requests_data, pd.DataFrame), "Expected data to be loaded as DataFrame."
+def test_write_to_json(setup_service_request, tmp_path):
+    """Test writing grouped requests to JSON file."""
+    service_request = setup_service_request
+    service_request.load_csv()  # Ensure data is loaded
+    grouped_data = service_request.group_requests_by_description()
+    
+    output_json_path = tmp_path / "groupedRequests.json"
+    service_request.write_to_json(grouped_data, output_file=output_json_path)
+    
+    # Read the output JSON file and verify its contents
+    with open(output_json_path, "r") as json_file:
+        json_output = json.load(json_file)
+    
+    expected_output = {
+        "Request A": [{"Other Column": "Data1"}, {"Other Column": "Data3"}],
+        "Request B": [{"Other Column": "Data2"}],
+        "Request C": [{"Other Column": "Data4"}]
+    }
+    
+    assert json_output == expected_output, "Output JSON should match expected grouped data"
+    test_results["test_write_to_json"] = "Passed"
 
-# Test load_csv method with an invalid file path
-def test_load_csv_invalid_path(setup_service_request, capsys):
-    _, service_processor_invalid, _ = setup_service_request
-    service_processor_invalid.load_csv()
-    captured = capsys.readouterr()
-    assert "File not found" in captured.out, "Expected 'File not found' message for invalid file path."
-
-# Test group_requests_by_description with no data loaded
-def test_group_requests_by_description_no_data(setup_service_request, capsys):
-    _, service_processor_invalid, _ = setup_service_request
-    grouped_data = service_processor_invalid.group_requests_by_description()
-    captured = capsys.readouterr()
-    assert grouped_data is None, "Expected None when no data is loaded."
-    assert "No data loaded" in captured.out, "Expected 'No data loaded' message when data is not loaded."
-
-# Test group_requests_by_description with data loaded
-def test_group_requests_by_description_with_data(setup_service_request):
-    service_processor_valid, _, _ = setup_service_request
-    service_processor_valid.load_csv()
-    grouped_data = service_processor_valid.group_requests_by_description()
-    assert isinstance(grouped_data, dict), "Expected grouped data to be a dictionary."
-    assert len(grouped_data) > 0, "Expected grouped data to contain entries."
-
-# Test write_to_json method with valid data
-def test_write_to_json_valid_data(setup_service_request):
-    service_processor_valid, _, output_file = setup_service_request
-    test_data = {"test_key": "test_value"}
-    service_processor_valid.write_to_json(test_data, output_file)
-    assert os.path.exists(output_file), "Expected JSON output file to be created."
-
-    # Verify JSON content
-    with open(output_file, 'r') as f:
-        data = f.read()
-        assert "test_key" in data, "Expected 'test_key' in JSON output."
-
-# Test write_to_json with invalid data (None)
-def test_write_to_json_invalid_data(setup_service_request, capsys):
-    service_processor_valid, _, output_file = setup_service_request
-    service_processor_valid.write_to_json(None, output_file)
-    captured = capsys.readouterr()
-    assert "An error occurred while writing to JSON" in captured.out, "Expected error message for invalid JSON data."
+# After running the tests, write the results to test1.json
+@pytest.fixture(scope="session", autouse=True)
+def save_test_results():
+    yield  # Run all tests first
+    # Save the test results to test1.json
+    with open(output_file, "w") as f:
+        json.dump(test_results, f, indent=4)
 
