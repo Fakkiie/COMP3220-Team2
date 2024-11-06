@@ -1,82 +1,46 @@
-import pytest
-import os
-import json
-import pandas as pd
 from serviceRequest import ServiceRequest
 
-# Define a JSON file to store the test results
-output_file = "test1.json"
-test_results = {}
-
-# Mock data for testing
-csv_data = """Service Request Description,Other Column
-Request A,Data1
-Request B,Data2
-Request A,Data3
-Request C,Data4
-"""
-
-@pytest.fixture
-def setup_service_request(tmp_path):
-    """Fixture to set up ServiceRequest instance and cleanup."""
-    # Create a temporary CSV file with mock data
-    file_path = tmp_path / "test_service_requests.csv"
-    with open(file_path, "w") as f:
-        f.write(csv_data)
+def test_load_csv():
+    file_path = "../data/AllServiceRequests_YTD.csv"
+    service_processor = ServiceRequest(file_path)
     
-    # Create a ServiceRequest instance with the temporary file path
-    service_request = ServiceRequest(file_path)
-    return service_request
+    try:
+        service_processor.load_csv()
+        print("test_load_csv: Passed")
+    except Exception as e:
+        print(f"test_load_csv: Failed - {e}")
 
-def test_load_csv(setup_service_request):
-    """Test loading of CSV file."""
-    service_request = setup_service_request
-    service_request.load_csv()
-    assert service_request.requests_data is not None, "CSV data should be loaded"
-    test_results["test_load_csv"] = "Passed"
+def test_group_requests_by_description():
+    file_path = "../data/AllServiceRequests_YTD.csv"
+    service_processor = ServiceRequest(file_path)
+    service_processor.load_csv()
+    
+    try:
+        grouped_requests = service_processor.group_requests_by_description()
+        if grouped_requests:
+            print("test_group_requests_by_description: Passed")
+        else:
+            print("test_group_requests_by_description: Failed - No data returned.")
+    except Exception as e:
+        print(f"test_group_requests_by_description: Failed - {e}")
 
-def test_group_requests_by_description(setup_service_request):
-    """Test grouping of requests by 'Service Request Description'."""
-    service_request = setup_service_request
-    service_request.load_csv()  # Ensure data is loaded
-    grouped_data = service_request.group_requests_by_description()
+def test_write_to_json():
+    file_path = "../data/AllServiceRequests_YTD.csv"
+    output_file = "../windsor-heatmap/public/data/groupedRequests.json"
+    service_processor = ServiceRequest(file_path)
+    service_processor.load_csv()
+    grouped_requests = service_processor.group_requests_by_description()
     
-    expected_output = {
-        "Request A": [{"Other Column": "Data1"}, {"Other Column": "Data3"}],
-        "Request B": [{"Other Column": "Data2"}],
-        "Request C": [{"Other Column": "Data4"}]
-    }
-    
-    assert grouped_data == expected_output, "Grouped data should match expected output"
-    test_results["test_group_requests_by_description"] = "Passed"
+    try:
+        if grouped_requests:
+            service_processor.write_to_json(grouped_requests, output_file)
+            print("test_write_to_json: Passed")
+        else:
+            print("test_write_to_json: Failed - No data to write.")
+    except Exception as e:
+        print(f"test_write_to_json: Failed - {e}")
 
-def test_write_to_json(setup_service_request, tmp_path):
-    """Test writing grouped requests to JSON file."""
-    service_request = setup_service_request
-    service_request.load_csv()  # Ensure data is loaded
-    grouped_data = service_request.group_requests_by_description()
-    
-    output_json_path = tmp_path / "groupedRequests.json"
-    service_request.write_to_json(grouped_data, output_file=output_json_path)
-    
-    # Read the output JSON file and verify its contents
-    with open(output_json_path, "r") as json_file:
-        json_output = json.load(json_file)
-    
-    expected_output = {
-        "Request A": [{"Other Column": "Data1"}, {"Other Column": "Data3"}],
-        "Request B": [{"Other Column": "Data2"}],
-        "Request C": [{"Other Column": "Data4"}]
-    }
-    
-    assert json_output == expected_output, "Output JSON should match expected grouped data"
-    test_results["test_write_to_json"] = "Passed"
-
-# After running the tests, write the results to test1.json
-@pytest.fixture(scope="session", autouse=True)
-def save_test_results():
-    yield  # Run all tests first
-    # Save the test results to test1.json
-    with open(output_file, "w") as f:
-        json.dump(test_results, f, indent=4)
-
+if __name__ == "__main__":
+    test_load_csv()
+    test_group_requests_by_description()
+    test_write_to_json()

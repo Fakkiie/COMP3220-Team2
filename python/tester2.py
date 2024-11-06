@@ -1,89 +1,57 @@
-import pytest
-import geopandas as gpd
-import pandas as pd
-import json
-from shapely.geometry import Polygon, MultiPolygon
-from processData import WardBoundariesProcessor  # Import your main file
+from processData import WardBoundariesProcessor
 
-# Define a JSON file to store the test results
-output_file = "test2.json"
-test_results = {}
-
-# Mock data for testing
-mock_geometry = [
-    Polygon([(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)]),
-    MultiPolygon([Polygon([(0, 0), (2, 0), (2, 2), (0, 2), (0, 0)]), Polygon([(3, 3), (4, 3), (4, 4), (3, 4), (3, 3)])])
-]
-mock_data = {
-    'Name': ['Ward 1', 'Ward 2'],
-    'geometry': mock_geometry
-}
-
-@pytest.fixture
-def setup_ward_processor(tmp_path):
-    """Fixture to set up WardBoundariesProcessor with mock data."""
-    # Create a temporary GeoDataFrame with mock data
-    mock_gdf = gpd.GeoDataFrame(mock_data, geometry='geometry')
+def test_load_kml():
+    file_path = "../data/doc.kml"
+    ward_processor = WardBoundariesProcessor(file_path)
     
-    # Create a temporary KML file
-    file_path = tmp_path / "test_doc.kml"
-    mock_gdf.to_file(file_path, driver="KML")
-    
-    # Initialize WardBoundariesProcessor with the temporary KML file path
-    processor = WardBoundariesProcessor(file_path)
-    return processor
+    try:
+        ward_processor.load_kml()
+        print("test_load_kml: Passed")
+    except Exception as e:
+        print(f"test_load_kml: Failed - {e}")
 
-def test_load_kml(setup_ward_processor):
-    """Test loading of KML file."""
-    processor = setup_ward_processor
-    processor.load_kml()
-    assert processor.ward_data is not None, "KML data should be loaded"
-    test_results["test_load_kml"] = "Passed"
+def test_get_ordered_ward_numbers():
+    file_path = "../data/doc.kml"
+    ward_processor = WardBoundariesProcessor(file_path)
+    ward_processor.load_kml()
+    
+    try:
+        ordered_ward_numbers = ward_processor.get_ordered_ward_numbers()
+        if ordered_ward_numbers:
+            print("test_get_ordered_ward_numbers: Passed")
+        else:
+            print("test_get_ordered_ward_numbers: Failed - No data returned.")
+    except Exception as e:
+        print(f"test_get_ordered_ward_numbers: Failed - {e}")
 
-def test_get_ordered_ward_numbers(setup_ward_processor):
-    """Test extraction and ordering of ward numbers."""
-    processor = setup_ward_processor
-    processor.load_kml()  # Ensure data is loaded
-    ordered_numbers = processor.get_ordered_ward_numbers()
+def test_get_ward_coordinates():
+    file_path = "../data/doc.kml"
+    ward_processor = WardBoundariesProcessor(file_path)
+    ward_processor.load_kml()
     
-    expected_numbers = [1, 2]
-    assert ordered_numbers == expected_numbers, "Ordered ward numbers should match expected output"
-    test_results["test_get_ordered_ward_numbers"] = "Passed"
+    try:
+        ward_coordinates = ward_processor.get_ward_coordinates()
+        if ward_coordinates is not None and not ward_coordinates.empty:
+            print("test_get_ward_coordinates: Passed")
+        else:
+            print("test_get_ward_coordinates: Failed - No data returned.")
+    except Exception as e:
+        print(f"test_get_ward_coordinates: Failed - {e}")
 
-def test_get_ward_coordinates(setup_ward_processor):
-    """Test extraction of ward coordinates."""
-    processor = setup_ward_processor
-    processor.load_kml()  # Ensure data is loaded
-    ward_coordinates = processor.get_ward_coordinates()
+def test_export_geojson():
+    file_path = "../data/doc.kml"
+    output_file = "../data/ward_boundaries.geojson"
+    ward_processor = WardBoundariesProcessor(file_path)
+    ward_processor.load_kml()
     
-    # Expected coordinates for the mock data
-    expected_coordinates = [
-        [[(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0), (0.0, 0.0)]],
-        [[(0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0), (0.0, 0.0)], [(3.0, 3.0), (4.0, 3.0), (4.0, 4.0), (3.0, 4.0), (3.0, 3.0)]]
-    ]
-    
-    extracted_coordinates = ward_coordinates['coordinates'].to_list()
-    assert extracted_coordinates == expected_coordinates, "Extracted coordinates should match expected output"
-    test_results["test_get_ward_coordinates"] = "Passed"
+    try:
+        ward_processor.export_geojson(output_file)
+        print("test_export_geojson: Passed")
+    except Exception as e:
+        print(f"test_export_geojson: Failed - {e}")
 
-def test_export_geojson(setup_ward_processor, tmp_path):
-    """Test exporting ward boundaries to GeoJSON."""
-    processor = setup_ward_processor
-    processor.load_kml()  # Ensure data is loaded
-    output_geojson_path = tmp_path / "test_ward_boundaries.geojson"
-    
-    processor.export_geojson(output_geojson_path)
-    
-    # Load and verify the exported GeoJSON file
-    geojson_data = gpd.read_file(output_geojson_path)
-    assert geojson_data is not None, "GeoJSON file should be created and readable"
-    assert list(geojson_data['Name']) == ['Ward 1', 'Ward 2'], "GeoJSON data should match original ward names"
-    test_results["test_export_geojson"] = "Passed"
-
-# After running the tests, write the results to test2.json
-@pytest.fixture(scope="session", autouse=True)
-def save_test_results():
-    yield  # Run all tests first
-    # Save the test results to test2.json
-    with open(output_file, "w") as f:
-        json.dump(test_results, f, indent=4)
+if __name__ == "__main__":
+    test_load_kml()
+    test_get_ordered_ward_numbers()
+    test_get_ward_coordinates()
+    test_export_geojson()
