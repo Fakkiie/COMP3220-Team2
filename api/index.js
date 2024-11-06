@@ -1,12 +1,10 @@
 import express from 'express';
-import dotenv from 'dotenv';
-import groupedHandler from './grouped.js';
-import serviceHandler from './service.js';
-
-dotenv.config();
+import cors from 'cors'; // Import CORS
 
 const app = express();
 const PORT = process.env.PORT || 5008;
+
+app.use(cors());
 
 app.get('/api/grouped', groupedHandler);
 app.get('/api/service', serviceHandler);
