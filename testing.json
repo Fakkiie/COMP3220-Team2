@@ -1,0 +1,26 @@
+{
+    "test_load_csv_valid_path": {
+        "status": "Failed",
+        "message": "Expected data to be loaded as DataFrame."
+    },
+    "test_load_csv_invalid_path": {
+        "status": "Passed",
+        "message": null
+    },
+    "test_group_requests_by_description_no_data": {
+        "status": "Passed",
+        "message": null
+    },
+    "test_group_requests_by_description_with_data": {
+        "status": "Failed",
+        "message": "Expected grouped data to contain entries as a dictionary."
+    },
+    "test_write_to_json_valid_data": {
+        "status": "Passed",
+        "message": null
+    },
+    "test_write_to_json_invalid_data": {
+        "status": "Failed",
+        "message": "Expected error when writing None to JSON."
+    }
+}
