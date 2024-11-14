@@ -8,10 +8,9 @@ export default async function handler(req, res) {
 
   try {
     const query = `
-      SELECT ward, department, COUNT(*) as count
+      SELECT request, department, COUNT(*) as count
       FROM servicerequests
-      GROUP BY ward, department;
-
+      GROUP BY request, department;
     `;
     const { rows } = await pool.query(query);
     res.status(200).json(rows);

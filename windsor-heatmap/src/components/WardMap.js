@@ -7,6 +7,7 @@ const WardMap = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [wardRequests, setWardRequests] = useState({});
+  const [maxRequests, setMaxRequests] = useState(0);
 
   useEffect(() => {
     console.log("Starting WardMap component");
@@ -15,47 +16,42 @@ const WardMap = () => {
     // Fetch GeoJSON Data
     fetch('/data/ward_boundaries.geojson')
       .then(response => {
-        console.log("GeoJSON response status:", response.status);
         if (!response.ok) throw new Error(`Failed to load GeoJSON: ${response.statusText}`);
         return response.json();
       })
       .then(data => {
-        console.log("Fetched GeoJSON data:", data);
         setGeoData(data);
         setLoading(false);
       })
       .catch(err => {
-        console.error("Error loading GeoJSON:", err);
         setError(err);
         setLoading(false);
       });
 
     // Fetch service requests data
-    fetch('https://comp3220-team2.onrender.com/api/service')
-      .then(response => {
-        console.log("Service API response status:", response.status);
-        return response.json();
-      })
+    fetch('https://comp3220-team2.onrender.com/api/grouped')
+      .then(response => response.json())
       .then(data => {
-        console.log("Fetched service requests data:", data);
+        console.log("API Response Data:", data);
 
-        // Organize data by ward
         const wardData = data.reduce((acc, item) => {
-          if (!acc[item.ward]) acc[item.ward] = {};
-          acc[item.ward][item.department] = (acc[item.ward][item.department] || 0) + 1;
+          const { ward, request, count } = item;
+          const standardizedWard = `WARD ${ward.split(" ")[1]}`;
+
+          if (!acc[standardizedWard]) acc[standardizedWard] = {};
+          acc[standardizedWard][request] = Number(count) || 0;
+
+          setMaxRequests(prevMax => Math.max(prevMax, Number(count) || 0));
           return acc;
         }, {});
-        console.log("Processed ward data:", wardData);
+
+        console.log("Processed Ward Data with Requests:", wardData);
         setWardRequests(wardData);
       })
       .catch(err => {
         console.error("Error fetching service requests:", err);
         setError(err);
       });
-
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
   }, []);
 
   if (loading) {
@@ -70,38 +66,51 @@ const WardMap = () => {
 
   const geoJSONStyle = (feature) => {
     const wardName = feature.properties["Name"];
-    const wardData = wardRequests[wardName] || {};
-    const totalRequests = Object.values(wardData).reduce((acc, count) => acc + count, 0);
-    const fillOpacity = totalRequests > 0 ? 0.2 + 0.8 * (totalRequests / 500) : 0.2;
+    const standardizedWardName = `WARD ${wardName.split(" ")[1] || wardName}`;
+    const wardData = wardRequests[standardizedWardName] || {};
 
-    console.log(`Styling ward ${wardName} with ${totalRequests} requests (opacity: ${fillOpacity})`);
+    const totalRequests = Object.values(wardData).reduce((acc, count) => acc + count, 0);
+    const fillOpacity = totalRequests > 0 ? Math.min(0.2 + 0.8 * (totalRequests / maxRequests), 1) : 0.2;
+
+    console.log(`Total Requests for ${standardizedWardName}: ${totalRequests} | Opacity: ${fillOpacity}`);
     
     return {
       color: "blue",
       weight: 2,
       opacity: 1,
-      fillOpacity: fillOpacity
+      fillOpacity: fillOpacity,
     };
+  };
+
+  const fetchPopupData = async (wardName) => {
+    try {
+      const response = await fetch(`https://comp3220-team2.onrender.com/api/ward/${wardName}`);
+      const data = await response.json();
+      console.log(`Popup Data for ${wardName}:`, data); // Confirm the structure here
+      return data;
+    } catch (error) {
+      console.error("Error fetching ward data:", error);
+      return {};
+    }
   };
 
   const onEachFeature = (feature, layer) => {
     const wardName = feature.properties["Name"];
-    const wardData = wardRequests[wardName] || {};
-  
-    const popupContent = `
-      <div class="max-h-32 overflow-y-auto p-2">
-        <strong>${wardName}</strong><br />
-        ${Object.entries(wardData)
-          .map(([department, count]) => `${department}: ${count}`)
-          .join('<br />') || "No requests available"}
-      </div>`;
-  
-    console.log(`Adding popup for ward ${wardName}:`, wardData);
-  
-    layer.bindPopup(popupContent);
-    layer.on('click', () => layer.openPopup());
+    const standardizedWardName = `WARD ${wardName.split(" ")[1] || wardName}`;
+    const wardData = wardRequests[standardizedWardName] || {};
+
+    layer.on('click', () => {
+      const popupContent = `
+        <div class="max-h-32 overflow-y-auto p-2">
+          <strong>${standardizedWardName}</strong><br />
+          ${Object.entries(wardData)
+            .map(([request, count]) => `${request}: ${count}`)
+            .join('<br />') || "No requests available"}
+        </div>`;
+      
+      layer.bindPopup(popupContent).openPopup();
+    });
   };
-  
 
   return (
     <MapContainer
