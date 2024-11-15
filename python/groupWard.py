@@ -18,7 +18,7 @@ class ServiceRequestByWard:
     def group_requests_by_ward(self):
         if self.requests_data is not None:
             try:
-                #group by ward and 'Service Request Description' and count occurrences
+                #group by ward and service request and count occurrences
                 grouped = self.requests_data.groupby(['Ward', 'Service Request Description']).size().unstack(fill_value=0)
                 grouped_data = grouped.to_dict(orient="index")
                 return grouped_data
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     service_processor = ServiceRequestByWard(file_path)
     service_processor.load_csv()
     
-    # Group requests by 'Ward' and 'Service Request Description'
+    #roup requests by ward and service request
     grouped_requests = service_processor.group_requests_by_ward()
     
     if grouped_requests is not None:
