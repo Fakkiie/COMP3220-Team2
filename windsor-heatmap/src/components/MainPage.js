@@ -5,6 +5,7 @@ import WardMap from './WardMap';
 import Upload from './Upload';
 import FilterPage from './FilterPage';
 
+//main page for rendering our components 
 const MainPage = () => {
   return (
     <div className="flex flex-col min-h-screen">

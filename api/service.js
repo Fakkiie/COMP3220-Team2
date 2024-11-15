@@ -1,5 +1,7 @@
 import pool from './db.js';
 
+//this will be what our filter calls if it ever works 
+//DO NOT USE * OR THE WEBSITE WILL DIE
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);

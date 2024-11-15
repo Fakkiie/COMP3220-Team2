@@ -7,111 +7,110 @@ const WardMap = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [wardRequests, setWardRequests] = useState({});
-  const [maxRequests, setMaxRequests] = useState(0);
+  const [maxRequests, setMaxRequests] = useState(1); 
 
+  //when our component renders it runs , fetches our geojson file and a query from our database
+  //that allows us to fill out the opacity of the map as well as setting up the data in a way so 
+  //our onclick function will work
   useEffect(() => {
-    console.log("Starting WardMap component");
-    document.body.style.overflow = 'hidden';
-
-    // Fetch GeoJSON Data
+    console.log("Fetching GeoJSON data...");
     fetch('/data/ward_boundaries.geojson')
-      .then(response => {
+      .then((response) => {
         if (!response.ok) throw new Error(`Failed to load GeoJSON: ${response.statusText}`);
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
+        console.log("GeoJSON Data Loaded:", data);
         setGeoData(data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
+        console.error("Error loading GeoJSON:", err);
         setError(err);
         setLoading(false);
       });
 
-    // Fetch service requests data
+    console.log("Fetching grouped ward data...");
     fetch('https://comp3220-team2.onrender.com/api/grouped')
-      .then(response => response.json())
-      .then(data => {
-        console.log("API Response Data:", data);
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Raw grouped ward data:", data);
 
         const wardData = data.reduce((acc, item) => {
-          const { ward, request, count } = item;
+          const { ward, department, count } = item;
           const standardizedWard = `WARD ${ward.split(" ")[1]}`;
-
-          if (!acc[standardizedWard]) acc[standardizedWard] = {};
-          acc[standardizedWard][request] = Number(count) || 0;
-
-          setMaxRequests(prevMax => Math.max(prevMax, Number(count) || 0));
+          if (!acc[standardizedWard]) acc[standardizedWard] = { totalRequests: 0, departments: {} };
+          acc[standardizedWard].totalRequests += Number(count);
+          acc[standardizedWard].departments[department] =
+            (acc[standardizedWard].departments[department] || 0) + Number(count);
           return acc;
         }, {});
 
-        console.log("Processed Ward Data with Requests:", wardData);
+        const calculatedMaxRequests = Math.max(
+          ...Object.values(wardData).map((ward) => ward.totalRequests),
+          1 
+        );
         setWardRequests(wardData);
+        setMaxRequests(calculatedMaxRequests);
       })
-      .catch(err => {
-        console.error("Error fetching service requests:", err);
+      .catch((err) => {
+        console.error("Error fetching grouped data:", err);
         setError(err);
       });
   }, []);
 
-  if (loading) {
-    console.log("Loading map data...");
+  if (loading || !geoData || !Object.keys(wardRequests).length) {
     return <div>Loading map...</div>;
   }
 
-  if (error) {
-    console.error("Map error:", error);
-    return <div>Error: {error.message}</div>;
-  }
-
+  //styles our ward and fills in the opacity with a scale around 0.2/0.8 
+  //and returns the styles to our map
   const geoJSONStyle = (feature) => {
     const wardName = feature.properties["Name"];
     const standardizedWardName = `WARD ${wardName.split(" ")[1] || wardName}`;
-    const wardData = wardRequests[standardizedWardName] || {};
+    const wardData = wardRequests[standardizedWardName] || { totalRequests: 0 };
 
-    const totalRequests = Object.values(wardData).reduce((acc, count) => acc + count, 0);
-    const fillOpacity = totalRequests > 0 ? Math.min(0.2 + 0.8 * (totalRequests / maxRequests), 1) : 0.2;
+    const totalRequests = wardData.totalRequests;
 
-    console.log(`Total Requests for ${standardizedWardName}: ${totalRequests} | Opacity: ${fillOpacity}`);
-    
+    const fillOpacity = totalRequests > 0
+      ? 0.2 + (0.6 * totalRequests) / maxRequests 
+      : 0.2;
+
     return {
       color: "blue",
       weight: 2,
       opacity: 1,
-      fillOpacity: fillOpacity,
+      fillOpacity: Math.min(fillOpacity, 0.8),
     };
   };
 
-  const fetchPopupData = async (wardName) => {
-    try {
-      const response = await fetch(`https://comp3220-team2.onrender.com/api/ward/${wardName}`);
-      const data = await response.json();
-      console.log(`Popup Data for ${wardName}:`, data); // Confirm the structure here
-      return data;
-    } catch (error) {
-      console.error("Error fetching ward data:", error);
-      return {};
-    }
-  };
-
+  //our onclick function that will display the data of the ward when clicked,
+  //it pops up a box displaying the amount of requests made to a department in that specific ward
+  //need to try and make it work with requests but it only wants department for some reason even if my 
+  //query only has ward, reqeust, unsure tbh
   const onEachFeature = (feature, layer) => {
     const wardName = feature.properties["Name"];
     const standardizedWardName = `WARD ${wardName.split(" ")[1] || wardName}`;
-    const wardData = wardRequests[standardizedWardName] || {};
+    const wardData = wardRequests[standardizedWardName] || { departments: {} };
 
     layer.on('click', () => {
       const popupContent = `
         <div class="max-h-32 overflow-y-auto p-2">
           <strong>${standardizedWardName}</strong><br />
-          ${Object.entries(wardData)
-            .map(([request, count]) => `${request}: ${count}`)
-            .join('<br />') || "No requests available"}
+          ${
+            Object.entries(wardData.departments).length > 0
+              ? Object.entries(wardData.departments)
+                  .map(([department, count]) => `<strong>${department || "UNKNOWN"}:</strong> ${count}`)
+                  .join('<br />')
+              : "No requests available"
+          }
         </div>`;
-      
       layer.bindPopup(popupContent).openPopup();
     });
   };
 
+  //what our component returns, the map and the specifics of it like the min max zoom, also renders our geojson and all our main functions
+  //also key allows us to force a re-render of our component so we can have the onlcick work, if it isnt there our onclick is messed up
   return (
     <MapContainer
       center={[42.317432, -83.026772]}
@@ -125,13 +124,12 @@ const WardMap = () => {
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {geoData && (
-        <GeoJSON
-          data={geoData}
-          style={geoJSONStyle}
-          onEachFeature={onEachFeature}
-        />
-      )}
+      <GeoJSON
+        key={JSON.stringify(wardRequests)}
+        data={geoData}
+        style={(feature) => geoJSONStyle(feature)}
+        onEachFeature={onEachFeature}
+      />
     </MapContainer>
   );
 };

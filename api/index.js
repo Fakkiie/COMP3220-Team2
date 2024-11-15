@@ -1,24 +1,28 @@
 import express from 'express';
-import cors from 'cors'; // Import the CORS package
+import cors from 'cors'; 
 import dotenv from 'dotenv';
 import groupedHandler from './grouped.js';
 import serviceHandler from './service.js';
+import addServiceHandler from './addServiceRequest.js'; 
 
+//imports our db config
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5007;
 
-
+//opens cors to anything so our get and post works
 app.use(cors({
   origin: '*',
 }));
+app.use(express.json()); 
 
-// Define routes
+//defines our routes
 app.get('/api/grouped', groupedHandler);
 app.get('/api/service', serviceHandler);
+app.post('/api/addServiceRequest', addServiceHandler); 
 
-// Start the server
+//starts server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
