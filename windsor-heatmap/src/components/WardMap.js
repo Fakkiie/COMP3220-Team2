@@ -13,14 +13,12 @@ const WardMap = () => {
   //that allows us to fill out the opacity of the map as well as setting up the data in a way so 
   //our onclick function will work
   useEffect(() => {
-    console.log("Fetching GeoJSON data...");
     fetch('/data/ward_boundaries.geojson')
       .then((response) => {
         if (!response.ok) throw new Error(`Failed to load GeoJSON: ${response.statusText}`);
         return response.json();
       })
       .then((data) => {
-        console.log("GeoJSON Data Loaded:", data);
         setGeoData(data);
         setLoading(false);
       })
@@ -30,12 +28,9 @@ const WardMap = () => {
         setLoading(false);
       });
 
-    console.log("Fetching grouped ward data...");
     fetch('https://comp3220-team2.onrender.com/api/grouped')
       .then((response) => response.json())
       .then((data) => {
-        console.log("Raw grouped ward data:", data);
-
         const wardData = data.reduce((acc, item) => {
           const { ward, department, count } = item;
           const standardizedWard = `WARD ${ward.split(" ")[1]}`;

@@ -36,7 +36,6 @@ export default async function handler(req, res) {
     ];
 
     const { rows } = await pool.query(query, values);
-    console.log("Inserted row:", rows[0]);
     res.status(201).json(rows[0]);
   } catch (error) {
     console.error("Error inserting data:", error);

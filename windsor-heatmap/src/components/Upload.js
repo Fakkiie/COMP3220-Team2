@@ -80,9 +80,6 @@ const Upload = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
     
-        //debugger 
-        console.log("Form data before submission:", formData);
-    
         //what we are submitting
         const submissionData = {
             serviceRequest: formData.serviceRequest.trim(),
