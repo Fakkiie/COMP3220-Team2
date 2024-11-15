@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';  // Import Router, Routes, and Route components
 import MainPage from './components/MainPage';
 import Upload from './components/Upload';
+import FilterPage from './components/FilterPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -16,6 +17,7 @@ root.render(
         
         {/* Route for Upload component */}
         <Route path="/upload" element={<Upload />} />
+        <Route path="/filter" element={<FilterPage />} />
       </Routes>
     </Router>
   </React.StrictMode>

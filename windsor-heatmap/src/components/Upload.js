@@ -9,7 +9,7 @@ const Upload = () => {
         department: "",
         address: "",
         street: "",
-        description: ""
+        ward: ""
     });
 
     //sets a service request to a department
@@ -67,42 +67,79 @@ const Upload = () => {
     //handles the department change for the service request
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-       
-        if (name === "serviceRequest") {
-            setFormData(prevData => ({
-                ...prevData,
-                serviceRequest: value,
-                department: serviceRequests[value] || "" 
-            }));
-        } else {
-            setFormData(prevData => ({
-                ...prevData,
-                [name]: value
-            }));
+    
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+            department: name === "serviceRequest" ? serviceRequests[value] || "" : prevData.department,
+        }));
+    };
+    
+    
+    //handles our form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        //debugger 
+        console.log("Form data before submission:", formData);
+    
+        //what we are submitting
+        const submissionData = {
+            serviceRequest: formData.serviceRequest.trim(),
+            department: formData.department.trim(),
+            blockaddress: formData.address.trim(), 
+            street: formData.street.trim(),
+            ward: formData.ward.trim(),
+            methodreceived: "Online",
+            createddate: new Date().toISOString(),
+        };
+    
+        //verification
+        for (const [key, value] of Object.entries(submissionData)) {
+            if (!value) {
+                alert(`Please fill in all fields. Missing: ${key}`);
+                return;
+            }
+        }
+        
+        //posts to our database
+        try {
+            const response = await fetch('https://comp3220-team2.onrender.com/api/addServiceRequest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(submissionData),
+            });
+    
+            if (response.ok) {
+                alert('Service request submitted successfully');
+                setFormData({
+                    serviceRequest: '',
+                    department: '',
+                    address: '',
+                    street: '',
+                    ward: '',
+                });
+            } else {
+                const errorData = await response.json();
+                console.error("Server error response:", errorData);
+                alert(`Failed to submit service request: ${errorData.error}`);
+            }
+        } catch (error) {
+            console.error("Error submitting service request:", error);
+            alert("An error occurred while submitting the request.");
         }
     };
     
-    //handles the submit and will fetch from our python to receive updated json but does nothing for now, need to set the fetch and all that
-    //once we figure out a file path
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const response = await fetch("", {
-            method: "POST",
-            headers: {
-                "Content-Type": ""
-            },
-            body: JSON.stringify(formData)
-        });
-        
-    };
+      
 
     return (
         <div className="min-h-screen flex flex-col">
             <Header />
             <div className="flex-grow flex items-center justify-center bg-gray-100">
                 <div className="container max-w-4xl mx-auto p-4 bg-white shadow-lg rounded-lg flex flex-col md:flex-row md:space-x-6">
-                    {/* Form Section */}
+                    {/* form Section */}
                     <div className="w-full md:w-2/3 p-6">
                         <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">Submit Service Request</h1>
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -132,7 +169,7 @@ const Upload = () => {
                                 />
                             </div>
 
-                            {/* Split Address and Street for easier json */}
+                            {/* split address and street for better view */}
                             <div className="flex flex-col md:flex-row md:space-x-4">
                                 <div className="flex flex-col w-full">
                                     <label className="text-gray-700 font-medium">Address</label>
@@ -153,15 +190,15 @@ const Upload = () => {
                                     />
                                 </div>
                             </div>
-                            {/*Keep description for looking offical, can change this to whatever we want */}
+                            {/* ward submission*/}
                             <div className="flex flex-col">
-                                <label className="text-gray-700 font-medium">Description</label>
-                                <textarea
-                                    name="description"
-                                    onChange={handleChange}
-                                    className="border border-gray-300 p-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    rows="3"
-                                ></textarea>
+                            <label className="text-gray-700 font-medium">Ward</label>
+                                    <input
+                                        type="text"
+                                        name="ward"
+                                        onChange={handleChange}
+                                        className="border border-gray-300 p-2 rounded-md shadow-sm"
+                                    />
                             </div>
 
                             <div>
@@ -175,7 +212,7 @@ const Upload = () => {
                         </form>
                     </div>
 
-                    {/* Right Side Text Section */}
+                    {/* text section*/}
                     <div className="w-full md:w-1/3 bg-gray-50 p-6 rounded-lg shadow-md flex flex-col justify-center">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Important Information</h2>
                         <p className="text-gray-600 mb-2">
