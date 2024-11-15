@@ -9,16 +9,6 @@ const WardMap = () => {
   const [wardRequests, setWardRequests] = useState({});
   const [maxRequests, setMaxRequests] = useState(1); 
 
-  // Bounds that are quite close to Windsor
-  const windsorBounds = [
-    [42.3662, -83.1150],  
-    [42.2266, -82.8900],  
-  ];
-
-  // Min and Max zoom levels 
-  const minZoom = 12;
-  const maxZoom = 14;
-
   //when our component renders it runs , fetches our geojson file and a query from our database
   //that allows us to fill out the opacity of the map as well as setting up the data in a way so 
   //our onclick function will work
@@ -125,7 +115,7 @@ const WardMap = () => {
     <MapContainer
       center={[42.317432, -83.026772]}
       zoom={12}
-      style={{ height: '100vh', width: '100%' }}
+      style={{ height: '94.3vh', width: '100%' }}
       scrollWheelZoom={true}
       minZoom={10}
       maxZoom={18}
