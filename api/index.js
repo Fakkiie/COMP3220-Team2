@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors'; 
 import dotenv from 'dotenv';
 import groupedHandler from './grouped.js';
-//import serviceHandler from './service.js';
+import serviceHandler from './service.js';
 import addServiceHandler from './addServiceRequest.js'; 
 
 //imports our db config
