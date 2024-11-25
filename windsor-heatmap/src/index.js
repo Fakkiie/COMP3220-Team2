@@ -2,22 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';  // Import Router, Routes, and Route components
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';  
 import MainPage from './components/MainPage';
 import Upload from './components/Upload';
-import FilterPage from './components/FilterPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Router>
       <Routes>
-        {/* Default route for MainPage (SR Dashboard) */}
+        {/* default path for our routing */}
         <Route path="/" element={<MainPage />} />
         
-        {/* Route for Upload component */}
+        {/* route to upload component*/}
         <Route path="/upload" element={<Upload />} />
-        <Route path="/filter" element={<FilterPage />} />
       </Routes>
     </Router>
   </React.StrictMode>

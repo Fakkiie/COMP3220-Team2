@@ -28,6 +28,9 @@ const WardMap = () => {
         setLoading(false);
       });
 
+    //processes the data to structure it by ward, makes a standardized ward name,
+    //initializes the ward with a total request count and department count
+    //then calculates the max requests for the map for styling
     fetch('https://comp3220-team2.onrender.com/api/grouped')
       .then((response) => response.json())
       .then((data) => {
@@ -81,8 +84,7 @@ const WardMap = () => {
 
   //our onclick function that will display the data of the ward when clicked,
   //it pops up a box displaying the amount of requests made to a department in that specific ward
-  //need to try and make it work with requests but it only wants department for some reason even if my 
-  //query only has ward, reqeust, unsure tbh
+  //and will update with each upload
   const onEachFeature = (feature, layer) => {
     const wardName = feature.properties["Name"];
     const standardizedWardName = `WARD ${wardName.split(" ")[1] || wardName}`;

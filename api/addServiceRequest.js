@@ -1,7 +1,7 @@
 import pool from './db.js';
 
-//need to still work on this, but this is our post command from upload and will upload data to our databse
-//work in progress but its almost there tbh
+//our add service that upload calls, it will take the values of what is uploaded and post them to our database 
+//so that our grouped component call retrive these values
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);

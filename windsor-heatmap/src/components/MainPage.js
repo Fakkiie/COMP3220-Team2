@@ -3,9 +3,8 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Header from './Header';
 import WardMap from './WardMap';
 import Upload from './Upload';
-import FilterPage from './FilterPage';
 
-//main page for rendering our components 
+//main page for rendering our components, we seet the dimensions of our components here
 const MainPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
@@ -21,7 +20,6 @@ const MainPage = () => {
       {/* routes */}
       <Routes>
         <Route path="/upload" element={<Upload />} />
-        <Route path="/filter" element={<FilterPage />} />
       </Routes>
     </div>
   );

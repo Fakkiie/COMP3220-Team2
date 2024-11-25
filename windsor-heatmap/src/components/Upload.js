@@ -64,13 +64,14 @@ const Upload = () => {
     
     
 
-    //handles the department change for the service request
+    //handles the department change for the service request, and when a user enters a ward they only 
+    //need to enter a number for it to be added to our database properly
     const handleChange = (e) => {
         const { name, value } = e.target;
     
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value,
+            [name]: name === "ward" ? `WARD ${value.trim()}` : value,
             department: name === "serviceRequest" ? serviceRequests[value] || "" : prevData.department,
         }));
     };
@@ -91,7 +92,7 @@ const Upload = () => {
             createddate: new Date().toISOString(),
         };
     
-        //verification
+        //verification of fields
         for (const [key, value] of Object.entries(submissionData)) {
             if (!value) {
                 alert(`Please fill in all fields. Missing: ${key}`);
@@ -213,10 +214,11 @@ const Upload = () => {
                     <div className="w-full md:w-1/3 bg-gray-50 p-6 rounded-lg shadow-md flex flex-col justify-center">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">Important Information</h2>
                         <p className="text-gray-600 mb-2">
-                            Please provide accurate details to ensure that your request is processed quickly and effectively.
+                            Please provide accurate details to ensure that your request is processed quickly and effectively. Only enter a 
+                            number for the ward field.
                         </p>
                         <p className="text-gray-600">
-                            After submission, your request will be updated on the map within 1-2 minutes.
+                            After submission, your request will be updated on the map immediately.
                         </p>
                     </div>
                 </div>
