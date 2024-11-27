@@ -1,3 +1,5 @@
+
+DATABASE CONNECTION TAKES ABOUT 20-30 SECONDS FOR FIRST TIME LAUNCH WHEN THE SERVER HASN'T BEEN RAN IN A WHILE
 **Project Setup
 Prerequisites**<br/>
 Make sure you have the following installed on your machine:
