@@ -33,3 +33,9 @@ Node.js (which includes npm)<br/>
   To process the CSV or KML data, run:<br/>
   python3 python/processData.py to process ward boundary data.<br/>
   python3 python/serviceRequest.py to handle service requests.<br/>
+
+6. Running API endpoints
+   Cd into the API folder. <br/>
+   run node index.js. <br/>
+   You will see the port opened at 5007. <br/>
+   If any errors occur, run npm install and try again. <br/>
