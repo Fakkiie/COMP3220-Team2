@@ -1,5 +1,6 @@
 
-DATABASE CONNECTION TAKES ABOUT 20-30 SECONDS FOR FIRST TIME LAUNCH WHEN THE SERVER HASN'T BEEN RAN IN A WHILE
+DATABASE CONNECTION TAKES ABOUT 20-30 SECONDS FOR FIRST TIME LAUNCH WHEN THE SERVER HASN'T BEEN RAN IN A WHILE<br/>
+https://comp-3220-team2-31wp.vercel.app/ <br/>
 **Project Setup
 Prerequisites**<br/>
 Make sure you have the following installed on your machine:
